@@ -4,16 +4,9 @@ django-menu-actions
 Module to hold and serialize the in-memory relationship between urls and objects and users.
 
 
-Django-money
------------
-Django versions supported: 1.4.x, 1.5.x, 1.6.x
-
-Python versions supported: 2.6.x, 2.7.x, pypy 2.1, 3.2.x*, 3.3.x*
-
-
 Installation
 ------------
-You can obtain the source code for django-money from here:
+You can obtain the source code for django-menu-actions from here:
 
     https://github.com/neuman/django-menu-actions
 
@@ -22,21 +15,28 @@ Usage
 
 Use in models
 
-    from menu-actions import MenuAction, Actionable
+    from django.db import models
     from django.core.urlresolvers import reverse
+    from menu-actions import MenuAction, Actionable
 
 	class ProjectAction(MenuAction):
 	    display_name = "Human Readable Action Name"
 	    def is_available(self, user):
-	    	#insert your own conditional logic here to determine if this user has permission to do this action
+	    	#insert your own conditional logic here to determine 
+	    	#if this user has permission to do this action
 	        if self.instance.owners.filter(id=user.id).count() > 0:
 	            return True
 	        else:
 	            return False
 
 	    def get_url(self):
-	    	#use django reverse to spit out the url of the action for the given model
-	        return reverse(viewname='project_action_view_name', args=[self.instance.id], current_app='app_name')
+	    	#use django reverse to spit out the url of the action 
+	    	#for the given model
+	        return reverse(
+	        	viewname='project_action_view_name', 
+	        	args=[self.instance.id], 
+	        	current_app='app_name'
+	        	)
 
 	class Project(models.Model, Actionable):
 	    owners = models.ManyToManyField(Person)
@@ -61,3 +61,13 @@ Use in a view
 	        context = super(ProjectsView, self).get_context_data(**kwargs)
 	        context['available_actions'] = self.get_available_actions(self.request.user)
 	        return context
+
+Displaying in a Template
+
+      <ul>
+        {% block left_menu %}
+          {% for action in available_actions %}
+          	<li><a href="{{ action.url }}">{{ action.display_name }}</a></li>
+          {% endfor %}
+        {% endblock %}
+      </ul>
