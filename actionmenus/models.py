@@ -1,5 +1,5 @@
 
-class MenuAction(object):
+class Action(object):
     '''
     Object to hold and serialize the in-memory relationship between urls and objects and users.
     '''
