@@ -1,4 +1,5 @@
 #-*- encoding: utf-8 -*-
+from setuptools import setup
 setup(name="python-carteblanche",
       version="0.0.1",
       description="Module to hold and serialize the in-memory relationship between urls and objects and users.",
