@@ -40,7 +40,7 @@ class Noun(object):
 
     def get_available_verbs(self, user):
         output = []
-        for a in self.get_verb():
+        for a in self.get_verbs():
             if a.is_available(user):
                 output.append(a.get_serialized())
         return output
