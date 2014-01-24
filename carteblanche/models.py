@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 
 class Verb(object):
     '''
-    Object to hold and serialize the in-memory relationship between urls and objects and users.
+    Object to hold and serialize the in-memory relationship between verb-urls, objects, and users.
     '''
     url = "Unspecified"
     display_name = "Unspecified"
@@ -33,12 +33,12 @@ class Verb(object):
 class Noun(object):
     noun_cache = {}
     '''
-    Mixin intended to operate with Action, most likely in a django Model or View.
+    Mixin intended to operate with Verb, most likely in a django-like Model or class-based View.
     '''
     def get_verbs(self):
         return []
 
-    def get_available_verb(self, user):
+    def get_available_verbs(self, user):
         output = []
         for a in self.get_verb():
             if a.is_available(user):
