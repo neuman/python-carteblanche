@@ -35,8 +35,12 @@ class Noun(object):
     '''
     Mixin intended to operate with Verb, most likely in a django-like Model or class-based View.
     '''
+    verb_classes = []
     def get_verbs(self):
-        return []
+        output = []
+        for verb_class in self.verb_classes:
+            output.append(verb_class(self))
+        return output
 
     def get_available_verbs(self, user):
         cache = {}
@@ -58,3 +62,4 @@ class Noun(object):
 
     class Meta:
         abstract = True
+
