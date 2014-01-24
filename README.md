@@ -1,7 +1,7 @@
 python-carteblanche
 ===================
 
-Module to hold and serialize the in-memory relationship between urls and objects and users.
+A menuing system with the unlimited power of symantics. Holds and serializes the in-memory relationship between urls and objects and users.
 
 
 Installation
@@ -17,7 +17,7 @@ Use in models
 
     from django.db import models
     from django.core.urlresolvers import reverse
-    from menu-actions import Verb, Noun
+    from carteblanche.models import Verb, Noun
 
 	class ProjectVerb(Verb):
 	    display_name = "Human Readable Verb Name"
