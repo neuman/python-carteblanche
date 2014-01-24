@@ -39,32 +39,22 @@ class Noun(object):
         return []
 
     def get_available_verbs(self, user):
-        cache.__contains__('is_member')
+        cache = {}
         output = []
         for a in self.get_verbs():
             #availability key should be the same for verbs that have
             #the same is_available method
-            if self.instance.availability_key != None:
+            if a.availability_key != None:
                 #if the key exists, the method has been run already so we skip it
-                if cache.__contains__(self.instance.availability_key):
-                    available = cache[self.instance.availability_key]
+                if cache.__contains__(a.availability_key):
+                    available = cache[a.availability_key]
                 else:
                     #otherwise we run the method and add it to the cache
-                    available = a.is_available(user):
-                    cache.__setitem__(self.instance.availability_key, available)
+                    available = a.is_available(user)
+                    cache.__setitem__(a.availability_key, available)
                 if available == True:
                     output.append(a.get_serialized())
         return output
-
-    def try_cache(self, key, value):
-        if self.instance.noun_cache.__contains__('is_member'):
-            print 'using data from cache'
-            return self.instance.noun_cache['is_member']
-        else:
-            print 'add to cache'
-            is_member = self.instance.members.filter(id=user.id).count() > 0
-            self.instance.noun_cache.__setitem__('is_member',is_member)
-        return is_member
 
     class Meta:
         abstract = True
