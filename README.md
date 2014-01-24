@@ -1,4 +1,4 @@
-django-menu-actions
+python-carteblanche
 ===================
 
 Module to hold and serialize the in-memory relationship between urls and objects and users.
@@ -17,10 +17,10 @@ Use in models
 
     from django.db import models
     from django.core.urlresolvers import reverse
-    from menu-actions import MenuAction, Actionable
+    from menu-actions import Verb, Noun
 
-	class ProjectAction(MenuAction):
-	    display_name = "Human Readable Action Name"
+	class ProjectVerb(Verb):
+	    display_name = "Human Readable Verb Name"
 	    def is_available(self, user):
 	    	#insert your own conditional logic here to determine 
 	    	#if this user has permission to do this action
@@ -38,36 +38,36 @@ Use in models
 	        	current_app='app_name'
 	        	)
 
-	class Project(models.Model, Actionable):
+	class Project(models.Model, Noun):
 	    owners = models.ManyToManyField(Person)
 
-	    def get_actions(self):
-	        actions = [
-	            ProjectAction(self)
+	    def get_verbs(self):
+	        verbs = [
+	            ProjectVerbs(self)
 	        ]
 	        return actions
 
 Use in a view 
 
-	class ProjectsView(TemplateView, Actionable):
+	class ProjectsView(TemplateView, Noun):
 	    template_name = 'list.html'
 
-	    def get_actions(self):
+	    def get_verbs(self):
 	        return [
 	            cm.ProjectCreateAction()
 	            ]
 
 	    def get_context_data(self, **kwargs):
 	        context = super(ProjectsView, self).get_context_data(**kwargs)
-	        context['available_actions'] = self.get_available_actions(self.request.user)
+	        context['available_actions'] = self.get_available_verbs(self.request.user)
 	        return context
 
 Displaying in a Template
 
       <ul>
         {% block left_menu %}
-          {% for action in available_actions %}
-          	<li><a href="{{ action.url }}">{{ action.display_name }}</a></li>
+          {% for verb in available_verbs %}
+          	<li><a href="{{ verb.url }}">{{ verb.display_name }}</a></li>
           {% endfor %}
         {% endblock %}
       </ul>

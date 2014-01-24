@@ -26,18 +26,21 @@ class Verb(object):
             "display_name":self.get_display_name()
         }
 
+    class Meta:
+        abstract = True
+
 
 class Noun(object):
     noun_cache = {}
     '''
     Mixin intended to operate with Action, most likely in a django Model or View.
     '''
-    def get_actions(self):
+    def get_verbs(self):
         return []
 
-    def get_available_actions(self, user):
+    def get_available_verb(self, user):
         output = []
-        for a in self.get_actions():
+        for a in self.get_verb():
             if a.is_available(user):
                 output.append(a.get_serialized())
         return output
