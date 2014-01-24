@@ -14,9 +14,14 @@ class Project(cb.Noun):
     def get_verbs(self):
         verbs = [
             ProjectUploadVerb(instance=self),
-            ProjectPostVerb(instance=self)
+            ProjectPostVerb(instance=self),
+            ProjectViewVerb(instance=self)
         ]
         return verbs
+
+class ProjectViewVerb(cb.Verb):
+    def get_url(self):
+        return r"projects/"
 
 class ProjectMemberVerb(cb.Verb):
     availability_key = "is_member"
@@ -44,11 +49,19 @@ class TestNounFunctions(unittest.TestCase):
         self.nouns.append(Project())
         self.verbs.append(ProjectUploadVerb(self.nouns[0]))
         self.verbs.append(ProjectPostVerb(self.nouns[0]))
+        self.verbs.append(ProjectViewVerb(self.nouns[0]))
 
     def test_cache(self):
         # make sure the is_member method was run once only
         self.nouns[0].get_available_verbs(None)
         self.assertTrue(self.nouns[0].run_count == 1)
+        #reset it
+        self.nouns[0].run_count = 0
+
+    def test_no_cache(self):
+    	verbs = self.nouns[0].get_available_verbs(None)
+    	self.assertTrue(self.verbs[2].get_serialized() in verbs)
+
 
 if __name__ == '__main__':
     unittest.main()

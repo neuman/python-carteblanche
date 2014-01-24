@@ -44,16 +44,16 @@ class Noun(object):
         for a in self.get_verbs():
             #availability key should be the same for verbs that have
             #the same is_available method
-            if a.availability_key != None:
-                #if the key exists, the method has been run already so we skip it
-                if cache.__contains__(a.availability_key):
-                    available = cache[a.availability_key]
-                else:
-                    #otherwise we run the method and add it to the cache
-                    available = a.is_available(user)
+            try:
+                available = cache[a.availability_key]
+            except Exception as e:
+                #otherwise we run the method and add it to the cache if it has a caching key
+                available = a.is_available(user)
+                if a.availability_key != None:
                     cache.__setitem__(a.availability_key, available)
-                if available == True:
-                    output.append(a.get_serialized())
+
+            if available == True:
+                output.append(a.get_serialized())
         return output
 
     class Meta:
