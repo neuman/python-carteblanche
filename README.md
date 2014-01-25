@@ -8,7 +8,7 @@ Installation
 ------------
 You can obtain the source code for django-menu-actions from here:
 
-    https://github.com/neuman/django-menu-actions
+    https://github.com/neuman/python-carteblanche
 
 Usage
 -----
