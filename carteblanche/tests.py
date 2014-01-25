@@ -9,7 +9,7 @@ class ProjectViewVerb(cb.Verb):
 class ProjectMemberVerb(cb.Verb):
     availability_key = "is_member"
     def is_available(self, user):
-        return self.instance.is_member(user)
+        return self.noun.is_member(user)
 
 class ProjectUploadVerb(ProjectMemberVerb):
     display_name = "Upload Media"
@@ -40,9 +40,9 @@ class ProjectDupe(cb.Noun):
 
     def get_verbs(self):
         verbs = [
-            ProjectUploadVerb(instance=self),
-            ProjectPostVerb(instance=self),
-            ProjectViewVerb(instance=self)
+            ProjectUploadVerb(noun=self),
+            ProjectPostVerb(noun=self),
+            ProjectViewVerb(noun=self)
         ]
         return verbs
 

@@ -1,4 +1,3 @@
-from django.core.urlresolvers import reverse
 
 class Verb(object):
     '''
@@ -8,8 +7,8 @@ class Verb(object):
     display_name = "Unspecified"
     availability_key = None
 
-    def __init__(self, instance=None):
-        self.instance = instance
+    def __init__(self, noun=None):
+        self.noun = noun
 
     def get_url(self):
         return self.url
