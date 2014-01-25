@@ -67,7 +67,7 @@ Use inheretance to avoid running the same 'is_available' method twice.
 The availability_key should be the same string for any Verbs that have identical 'is_available' methods.
 
 ```python
-class ProjectMemberVerb(cb.Verb):
+class ProjectMemberVerb(Verb):
     availability_key = "is_member"
     def is_available(self, user):
         return self.noun.is_member(user)
@@ -84,7 +84,7 @@ class ProjectPostVerb(ProjectMemberVerb):
     def get_url(self):
         return "/projects/post"
 
-class Project(cb.Noun):
+class Project(Noun):
     run_count = 0
     verb_classes = [ProjectUploadVerb, ProjectPostVerb]
 

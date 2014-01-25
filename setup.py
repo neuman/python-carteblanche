@@ -9,11 +9,10 @@ setup(name="python-carteblanche",
       packages=["carteblanche"],
       install_requires=[],
       platforms=['Any'],
-      keywords=['django', 'py-money', 'money'],
+      keywords=['django', 'navigation', 'menu', 'verb', 'noun'],
       classifiers=["Development Status :: 5 - Production/Stable",
                    "Intended Audience :: Developers",
                    "License :: OSI Approved :: BSD License",
                    "Operating System :: OS Independent",
-                   "Programming Language :: Python",
-                   "Framework :: Django", ]
+                   "Programming Language :: Python"]
       )
