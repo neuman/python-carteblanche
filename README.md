@@ -109,7 +109,7 @@ Displaying in a Template
 
 ```html
 <ul>
-  {% for verb in available_verbs %}
+  {% for verb in noun.get_available_verbs %}
       <li><a href="{{ verb.url }}">{{ verb.display_name }}</a></li>
   {% endfor %}
 </ul>
