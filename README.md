@@ -25,15 +25,14 @@ class ProjectVerb(Verb):
     def is_available(self, user):
         #insert your own conditional logic here to determine 
         #if this user has permission to do this action
-        #or substitute your own logic
         if self.noun.owners.filter(id=user.id).count() > 0:
             return True
         else:
             return False
 
     def get_url(self):
-        #use django reverse to spit out the url of the action 
-        #for the given model
+        #I use django reverse to spit out the url of the action 
+        #for the given model but you can substitute your own logic
         return reverse(
             viewname='project_action_view_name', 
             args=[self.noun.id], 
