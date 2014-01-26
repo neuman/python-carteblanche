@@ -1,18 +1,12 @@
-#-*- encoding: utf-8 -*-
-from setuptools import setup
-setup(name="python-carteblanche",
-      version="0.0.3",
-      description="Module to hold and serialize the in-memory relationship between urls and objects and users.",
-      url="https://github.com/neuman/python-carteblanche",
-      maintainer='Eric Neuman',
-      maintainer_email='eric@indiepen.net',
-      packages=["carteblanche"],
-      install_requires=[],
-      platforms=['Any'],
-      keywords=['django', 'navigation', 'menu', 'verb', 'noun'],
-      classifiers=["Development Status :: 5 - Production/Stable",
-                   "Intended Audience :: Developers",
-                   "License :: OSI Approved :: BSD License",
-                   "Operating System :: OS Independent",
-                   "Programming Language :: Python"]
-      )
+from distutils.core import setup
+setup(
+    name = 'carteblanche',
+    packages = ['carteblanche'],
+    version = '0.0.3',
+    description='Module to hold and serialize the in-memory relationship between urls and objects and users.',
+    maintainer='Eric Neuman',
+    maintainer_email='eric@indiepen.net',
+    url="https://github.com/neuman/python-carteblanche",
+    download_url = 'https://github.com/neuman/python-carteblanche/tarball/v0.0.3',
+    keywords=['django', 'navigation', 'menu', 'verb', 'noun']
+)

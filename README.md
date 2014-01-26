@@ -25,6 +25,7 @@ class ProjectVerb(Verb):
     def is_available(self, user):
         #insert your own conditional logic here to determine 
         #if this user has permission to do this action
+        #or substitute your own logic
         if self.noun.owners.filter(id=user.id).count() > 0:
             return True
         else:
@@ -43,11 +44,6 @@ class Project(models.Model, Noun):
     owners = models.ManyToManyField(Person)
     verb_classes = [ProjectVerb]
 
-    def get_verbs(self):
-        verbs = [
-            ProjectVerbs(self)
-        ]
-        return actions
 ```
 
 Use in a view 
