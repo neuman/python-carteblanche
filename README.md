@@ -1,14 +1,18 @@
 python-carteblanche
 ===================
 
-A menuing system with the unlimited power of symantics. Holds and serializes the in-memory relationship between urls and objects and users.
+A menuing system with the unlimited power. Holds and serializes the in-memory relationship between urls and objects and users.
 
 
 Installation
 ------------
-You can obtain the source code for django-menu-actions from here:
+You can obtain the source code for carteblanche from here:
 
     https://github.com/neuman/python-carteblanche
+
+Or install it with pip from the console
+
+	pip install carteblanche
 
 Usage
 -----
