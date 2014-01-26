@@ -1,7 +1,7 @@
 python-carteblanche
 ===================
 
-A menuing system with the unlimited power. Holds and serializes the in-memory relationship between urls and objects and users.
+A menuing system of unlimited power. Holds and serializes the in-memory relationship between urls and objects and users.
 
 
 Installation

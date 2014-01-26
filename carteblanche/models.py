@@ -11,6 +11,9 @@ class Verb(object):
         self.noun = noun
 
     def get_url(self):
+        '''
+        Returns the url associated with this verb.
+        '''
         return self.url
 
     def get_display_name(self):
@@ -36,12 +39,18 @@ class Noun(object):
     '''
     verb_classes = []
     def get_verbs(self):
+        '''
+        Returns the full list of verbs registered on this noun regardless of availability. 
+        '''
         output = []
         for verb_class in self.verb_classes:
             output.append(verb_class(self))
         return output
 
     def get_available_verbs(self, user):
+        '''
+        Returns the list of verbs availabile to a specific user. 
+        '''
         cache = {}
         output = []
         for a in self.get_verbs():
