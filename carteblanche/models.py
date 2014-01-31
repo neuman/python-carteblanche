@@ -6,6 +6,7 @@ class Verb(object):
     url = "Unspecified"
     display_name = "Unspecified"
     availability_key = None
+    required = False
 
     def __init__(self, noun=None):
         self.noun = noun

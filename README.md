@@ -17,7 +17,7 @@ Or install it with pip from the console
 Usage
 -----
 
-Use in models
+###Use in a model
 
 ```python
 from django.db import models
@@ -49,11 +49,11 @@ class Project(models.Model, Noun):
 
 ```
 
-Use in a view 
+###Use in a view 
 
 ```python
     class ProjectsView(TemplateView, Noun):
-        template_name = 'list.html'
+        template_name = 'whatever.html'
         verb_classes = [ProjectCreateAction]
 
         def get_context_data(self, **kwargs):
@@ -62,8 +62,9 @@ Use in a view
             return context
 ```
 
-Use inheretance to avoid running the same 'is_available' method twice.
-The availability_key should be the same string for any Verbs that have identical 'is_available' methods.
+###Use inheretance to avoid running the same query twice
+
+If some of your verbs need to run the same query to check availability, you can specify an `avalability_key` and `get_available_verbs` will store the value returned from that verb's `is_available` method.  Any verbs that are checked after that with the same `availability_key` will use the stored value.  Inheretance is a simple way to do this without rewriting the `avalability_key` or shared `is_available` method.
 
 ```python
 class ProjectMemberVerb(Verb):
@@ -92,7 +93,7 @@ class Project(Noun):
         return True
 ```
 
-You can override the 'get_verbs'  method if you have custom logic.
+###You can override the 'get_verbs'  method if you have custom logic.
 
 ```python
 class Project(models.Model, Noun):
@@ -105,7 +106,7 @@ class Project(models.Model, Noun):
         return verbs
 ```
 
-Displaying in a Template
+###Displaying in a Template
 
 ```html
 <ul>
