@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
     name = 'carteblanche',
     packages = ['carteblanche'],
-    version = '0.0.4',
+    version = '0.0.5',
     description='Module to hold and serialize the in-memory relationship between urls and objects and users.',
     maintainer='Eric Neuman',
     maintainer_email='eric@indiepen.net',
