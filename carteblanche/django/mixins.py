@@ -48,7 +48,7 @@ class NounView(object):
     class Meta:
         abstract = True
 
-class DjangoVerb(cb.verb):
+class DjangoVerb(cb.Verb):
     view_name='pledge_create'
     login_required = False
 
