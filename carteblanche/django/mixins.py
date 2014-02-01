@@ -52,6 +52,8 @@ class DjangoVerb(cb.verb):
     view_name='pledge_create'
     login_required = False
 
-    def is_available(self, person):
+    def is_available(self, person, ):
         "takes a user and always returns True or False"
+        if (self.login_required == True) & (user.is_authenticated() == False):
+            return False
         return True
