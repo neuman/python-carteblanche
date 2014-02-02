@@ -21,7 +21,7 @@ class Verb(object):
     def get_display_name(self):
         return self.display_name
 
-    def is_available(self, person):
+    def is_available(self, user):
         "takes a user and always returns True or False"
         return True
 
@@ -58,7 +58,7 @@ class Noun(object):
 
         #check the cache for a key lazily
         try:
-            available = self.carteblanche_cache[availability_key]
+            return self.carteblanche_cache[availability_key]
         except Exception as e:
             #otherwise run the method and add it to the cache if it has a caching key
             for v in self.get_verbs():
