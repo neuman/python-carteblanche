@@ -24,15 +24,20 @@ class ProjectPostVerb(ProjectMemberVerb):
         return "/projects/post"
 
 class Project(cb.Noun):
-    run_count = 0
     verb_classes = [ProjectUploadVerb, ProjectPostVerb, ProjectViewVerb]
+
+    def __init__(self):
+        super(Project, self).__init__()
+        self.run_count = 0
 
     def is_member(self, user):
         self.run_count += 1
         return True
 
 class ProjectDupe(cb.Noun):
-    run_count = 0
+    def __init__(self):
+        super(ProjectDupe, self).__init__()
+        self.run_count = 0
 
     def is_member(self, user):
         self.run_count += 1
@@ -73,13 +78,6 @@ class TestNounFunctions(unittest.TestCase):
     def test_no_cache(self):
         verbs = self.nouns[0].get_available_verbs(None)
         self.assertTrue(self.verbs[2].get_serialized() in verbs)
-
-    def test_init_with_empty_cache(self):
-        '''
-        All nouns should instantiate with empty caches.  
-        If not then the class is being accessed somewhere.
-        '''
-        self.assertEqual(cb.Noun.carteblanche_cache, {})
 
     def test_get_verbs_override(self):
         self.assertTrue(self.nouns[0].get_available_verbs(None) == self.nouns[1].get_available_verbs(None))

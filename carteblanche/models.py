@@ -40,13 +40,12 @@ class Noun(object):
     Mixin intended to operate with Verb, most likely in a django-like Model or class-based View.
     '''
     verb_classes = []
-    carteblanche_cache = {}
 
     def __init__(self):
         #make sure the cache is empty and no one has messed with the class in memory
         #re-implement this once the caching bug is understood as a check
         #assert self.carteblanche_cache == {}
-        pass
+        self.carteblanche_cache = {}
 
     def get_verbs(self):
         '''

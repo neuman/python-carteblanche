@@ -6,7 +6,9 @@ from django.template import RequestContext
 
 
 class NounView(object):
-    noun = None
+
+    def __init__(self):
+        self.noun = None
 
     def get_view_required_verbs(self, view_name):
         verbs = []
