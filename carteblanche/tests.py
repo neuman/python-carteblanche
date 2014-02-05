@@ -4,7 +4,7 @@ import models as cb
 
 class ProjectViewVerb(cb.Verb):
     def get_url(self):
-        return r"projects/"
+        return "projects/"
 
 class ProjectMemberVerb(cb.Verb):
     availability_key = "is_member"
@@ -15,7 +15,7 @@ class ProjectUploadVerb(ProjectMemberVerb):
     display_name = "Upload Media"
 
     def get_url(self):
-        return r"projects/upload"
+        return "projects/upload"
 
 class ProjectPostVerb(ProjectMemberVerb):
     display_name = "Post"
@@ -73,6 +73,13 @@ class TestNounFunctions(unittest.TestCase):
     def test_no_cache(self):
         verbs = self.nouns[0].get_available_verbs(None)
         self.assertTrue(self.verbs[2].get_serialized() in verbs)
+
+    def test_init_with_empty_cache(self):
+        '''
+        All nouns should instantiate with empty caches.  
+        If not then the class is being accessed somewhere.
+        '''
+        self.assertEqual(cb.Noun.carteblanche_cache, {})
 
     def test_get_verbs_override(self):
         self.assertTrue(self.nouns[0].get_available_verbs(None) == self.nouns[1].get_available_verbs(None))

@@ -7,7 +7,7 @@ class Verb(object):
     display_name = "Unspecified"
     denied_message = "Sorry dude, I'm afraid you can't do that."
     availability_key = None
-    required = False
+    required = True
 
     def __init__(self, noun=None):
         self.noun = noun
@@ -42,6 +42,12 @@ class Noun(object):
     verb_classes = []
     carteblanche_cache = {}
 
+    def __init__(self):
+        #make sure the cache is empty and no one has messed with the class in memory
+        #re-implement this once the caching bug is understood as a check
+        #assert self.carteblanche_cache == {}
+        pass
+
     def get_verbs(self):
         '''
         Returns the full list of verbs registered on this noun regardless of availability. 
@@ -50,6 +56,23 @@ class Noun(object):
         for verb_class in self.verb_classes:
             output.append(verb_class(self))
         return output
+
+    def invalidate_carteblanche_cache(self):
+        '''
+        Resets the cache entirely.
+        '''
+        self.carteblanche_cache = {}
+
+    def invalidate_availability_key(self, availability_key):
+        '''
+        Remove a single availability_key from the cache. 
+        '''
+        self.carteblanche_cache.__delitem__(availability_key)
+
+    def set_key_availability(self, availability_key, value):
+        if value != (True or False):
+            raise Exception("key availability value must be bool")
+        self.carteblanche_cache.__setitem__(availability_key , value)
 
     def get_key_availability(self, user, availability_key):
         #prevent caching errors caused by None being used as a key
@@ -64,13 +87,15 @@ class Noun(object):
             for v in self.get_verbs():
                 if v.availability_key == availability_key:
                     available = v.is_available(user)
-                    self.carteblanche_cache.__setitem__(v.availability_key, available)
+                    self.set_key_availability(v.availability_key, available)
                     return available
 
     def get_available_verbs(self, user):
         '''
         Returns the list of verbs availabile to a specific user. 
         '''
+        print "get_available_verbs"
+        print type(self)
         output = []
         for v in self.get_verbs():
             #availability key should be the same for verbs that have
