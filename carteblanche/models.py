@@ -1,4 +1,3 @@
-
 class Verb(object):
     '''
     Object to hold and serialize the in-memory relationship between verb-urls, objects, and users.
@@ -42,9 +41,6 @@ class Noun(object):
     verb_classes = []
 
     def __init__(self):
-        #make sure the cache is empty and no one has messed with the class in memory
-        #re-implement this once the caching bug is understood as a check
-        #assert self.carteblanche_cache == {}
         self.carteblanche_cache = {}
 
     def get_verbs(self):
@@ -69,7 +65,7 @@ class Noun(object):
         self.carteblanche_cache.__delitem__(availability_key)
 
     def set_key_availability(self, availability_key, value):
-        if value != (True or False):
+        if type(value) != bool:
             raise Exception("key availability value must be bool")
         self.carteblanche_cache.__setitem__(availability_key , value)
 
