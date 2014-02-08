@@ -7,7 +7,7 @@ class ProjectViewVerb(cb.Verb):
         return "projects/"
 
 class ProjectMemberVerb(cb.Verb):
-    availability_key = "is_member"
+    condition_name = "is_member"
     def is_available(self, user):
         return self.noun.is_member(user)
 

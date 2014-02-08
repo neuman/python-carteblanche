@@ -5,7 +5,7 @@ class Verb(object):
     url = "Unspecified"
     display_name = "Unspecified"
     denied_message = "Sorry dude, I'm afraid you can't do that."
-    availability_key = None
+    condition_name = None
     required = True
 
     def __init__(self, noun=None):
@@ -41,7 +41,7 @@ class Noun(object):
     verb_classes = []
 
     def __init__(self):
-        self.carteblanche_cache = {}
+        self.conditions = {}
 
     def get_verbs(self):
         '''
@@ -56,49 +56,47 @@ class Noun(object):
         '''
         Resets the cache entirely.
         '''
-        self.carteblanche_cache = {}
+        self.conditions = {}
 
-    def invalidate_availability_key(self, availability_key):
+    def invalidate_condition(self, condition_name):
         '''
-        Remove a single availability_key from the cache. 
+        Remove a single condition from the cache. 
         '''
-        self.carteblanche_cache.__delitem__(availability_key)
+        self.conditions.__delitem__(condition_name)
 
-    def set_key_availability(self, availability_key, value):
+    def set_key_availability(self, condition_name, value):
         if type(value) != bool:
             raise Exception("key availability value must be bool")
-        self.carteblanche_cache.__setitem__(availability_key , value)
+        self.conditions.__setitem__(condition_name , value)
 
-    def get_key_availability(self, user, availability_key):
+    def get_key_availability(self, user, condition_name):
         #prevent caching errors caused by None being used as a key
-        if availability_key == None:
-            raise Exception('availability_key cannot be None')
+        if condition_name == None:
+            raise Exception('condition_name cannot be None')
 
         #check the cache for a key lazily
         try:
-            return self.carteblanche_cache[availability_key]
+            return self.conditions[condition_name]
         except Exception as e:
             #otherwise run the method and add it to the cache if it has a caching key
             for v in self.get_verbs():
-                if v.availability_key == availability_key:
+                if v.condition_name == condition_name:
                     available = v.is_available(user)
-                    self.set_key_availability(v.availability_key, available)
+                    self.set_key_availability(v.condition_name, available)
                     return available
 
     def get_available_verbs(self, user):
         '''
         Returns the list of verbs availabile to a specific user. 
         '''
-        print "get_available_verbs"
-        print type(self)
         output = []
         for v in self.get_verbs():
             #availability key should be the same for verbs that have
             #the same is_available method
-            if v.availability_key == None:
+            if v.condition_name == None:
                 available = v.is_available(user)
             else:
-                available = self.get_key_availability(user, v.availability_key)
+                available = self.get_key_availability(user, v.condition_name)
 
             if available == True:
                 output.append(v.get_serialized())
