@@ -5,7 +5,7 @@ from django.core.urlresolvers import resolve
 from django.template import RequestContext
 
 
-class NounView(object):
+class DjangoNounView(object):
 
     def __init__(self):
         self.noun = None

@@ -52,24 +52,24 @@ class Noun(object):
             output.append(verb_class(self))
         return output
 
-    def invalidate_carteblanche_cache(self):
+    def reset_conditions(self):
         '''
         Resets the cache entirely.
         '''
         self.conditions = {}
 
-    def invalidate_condition(self, condition_name):
+    def reset_condition(self, condition_name):
         '''
         Remove a single condition from the cache. 
         '''
         self.conditions.__delitem__(condition_name)
 
-    def set_key_availability(self, condition_name, value):
+    def set_condition(self, condition_name, value):
         if type(value) != bool:
             raise Exception("key availability value must be bool")
         self.conditions.__setitem__(condition_name , value)
 
-    def get_key_availability(self, user, condition_name):
+    def get_condition(self, user, condition_name):
         #prevent caching errors caused by None being used as a key
         if condition_name == None:
             raise Exception('condition_name cannot be None')
@@ -82,7 +82,7 @@ class Noun(object):
             for v in self.get_verbs():
                 if v.condition_name == condition_name:
                     available = v.is_available(user)
-                    self.set_key_availability(v.condition_name, available)
+                    self.set_condition(v.condition_name, available)
                     return available
 
     def get_available_verbs(self, user):
@@ -96,7 +96,7 @@ class Noun(object):
             if v.condition_name == None:
                 available = v.is_available(user)
             else:
-                available = self.get_key_availability(user, v.condition_name)
+                available = self.get_condition(user, v.condition_name)
 
             if available == True:
                 output.append(v.get_serialized())
