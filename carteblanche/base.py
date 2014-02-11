@@ -27,7 +27,8 @@ class Verb(object):
     def get_serialized(self):
         return {
             "url":self.get_url(),
-            "display_name":self.get_display_name()
+            "display_name":self.get_display_name(),
+            "condition_name":self.condition_name
         }
 
     class Meta:
@@ -41,7 +42,7 @@ class Noun(object):
     verb_classes = []
 
     def __init__(self):
-        self.conditions = {}
+        self.conditions = Conditions(self)
 
     def get_verbs(self):
         '''
@@ -51,39 +52,6 @@ class Noun(object):
         for verb_class in self.verb_classes:
             output.append(verb_class(self))
         return output
-
-    def reset_conditions(self):
-        '''
-        Resets the cache entirely.
-        '''
-        self.conditions = {}
-
-    def reset_condition(self, condition_name):
-        '''
-        Remove a single condition from the cache. 
-        '''
-        self.conditions.__delitem__(condition_name)
-
-    def set_condition(self, condition_name, value):
-        if type(value) != bool:
-            raise Exception("key availability value must be bool")
-        self.conditions.__setitem__(condition_name , value)
-
-    def get_condition(self, user, condition_name):
-        #prevent caching errors caused by None being used as a key
-        if condition_name == None:
-            raise Exception('condition_name cannot be None')
-
-        #check the cache for a key lazily
-        try:
-            return self.conditions[condition_name]
-        except Exception as e:
-            #otherwise run the method and add it to the cache if it has a caching key
-            for v in self.get_verbs():
-                if v.condition_name == condition_name:
-                    available = v.is_available(user)
-                    self.set_condition(v.condition_name, available)
-                    return available
 
     def get_available_verbs(self, user):
         '''
@@ -96,8 +64,56 @@ class Noun(object):
             if v.condition_name == None:
                 available = v.is_available(user)
             else:
-                available = self.get_condition(user, v.condition_name)
+                available = self.conditions.get(user, v.condition_name)
 
             if available == True:
                 output.append(v.get_serialized())
         return output
+
+
+class Conditions(object):
+    
+    def __init__(self, noun):
+        self.cache = {}
+        self.noun = noun
+
+    def reset(self):
+        '''
+        #Resets the cache entirely.
+        '''
+        self.cache = {}
+
+    def invalidate(self, user, condition_name):
+        '''
+        #Remove a single condition from the cache. 
+        '''
+        self.cache.__delitem__((user, condition_name))
+
+    def set(self, user, condition_name, value):
+        if type(value) != bool:
+            raise Exception("key availability value must be bool")
+        self.cache.__setitem__((user, condition_name), value)
+
+    def get(self, user, condition_name):
+        #prevent caching errors caused by None being used as a key
+        if condition_name == None:
+            raise Exception('condition_name cannot be None')
+
+        #check the cache for a key lazily
+        try:
+            return self.cache[(user, condition_name)]
+        except Exception as e:
+            #otherwise run the method and add it to the cache if it has a caching key
+            for v in self.noun.get_verbs():
+                if v.condition_name == condition_name:
+                    available = v.is_available(user)
+                    self.set(user, v.condition_name, available)
+                    return available
+
+    @property
+    def keys(self):
+        return self.cache.keys()
+
+    @property
+    def values(self):
+        return self.cache.values()
