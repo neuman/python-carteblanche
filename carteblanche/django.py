@@ -28,8 +28,9 @@ class NounView(object):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(NounView, self).get_context_data(**kwargs)
-        context['available_verbs'] = self.noun.get_available_verbs(self.request.user)
-        context['carteblanche_cache'] = self.noun.conditions.cache
+        available_verbs = self.noun.get_available_verbs(self.request.user)
+        context['available_verbs'] = available_verbs
+        context['conditions'] = [verb['condition_name'] for verb in available_verbs]
         self.noun.conditions.cache = {}
         return context
 
@@ -53,22 +54,12 @@ class NounView(object):
 class DjangoVerb(cb.Verb):
     view_name = None
     app = None
-    hidden = False
 
     def get_url(self):
         '''
         Default django get_url for urls that require no args.
         '''
         return reverse(viewname=self.view_name, current_app=self.app)
-
-    def get_serialized(self):
-        if self.hidden == True:
-            return None
-        return {
-            "url":self.get_url(),
-            "display_name":self.get_display_name(),
-            "condition_name":self.condition_name
-        }
 
 def availability_login_required(is_available_func):
     @wraps(is_available_func, assigned=available_attrs(is_available_func))

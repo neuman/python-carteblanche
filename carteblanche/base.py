@@ -7,6 +7,7 @@ class Verb(object):
     denied_message = "Sorry dude, I'm afraid you can't do that."
     condition_name = None
     required = True
+    visible = False
 
     def __init__(self, noun=None):
         self.noun = noun
@@ -28,7 +29,8 @@ class Verb(object):
         return {
             "url":self.get_url(),
             "display_name":self.get_display_name(),
-            "condition_name":self.condition_name
+            "condition_name":self.condition_name,
+            "visible":self.visible
         }
 
     class Meta:
@@ -110,10 +112,6 @@ class Conditions(object):
                     self.set(user, v.condition_name, available)
                     return available
 
-    @property
-    def keys(self):
-        return self.cache.keys()
+    def get_available(self, user):
+        return [verb['condition_name'] for verb in self.noun.get_available_verbs(user)]
 
-    @property
-    def values(self):
-        return self.cache.values()
