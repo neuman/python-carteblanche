@@ -1,8 +1,9 @@
 import random
 import unittest
-import models as cb
+import base as cb
 
 class ProjectViewVerb(cb.Verb):
+    condition_name = 'can_view'
     def get_url(self):
         return "projects/"
 
@@ -74,6 +75,9 @@ class TestNounFunctions(unittest.TestCase):
         self.assertTrue(self.nouns[0].run_count == 1)
         #reset it
         self.nouns[0].run_count = 0
+
+    def test_visible(self):
+        self.assertEqual(self.nouns[0].get_available_verbs('no need for a user object')[0]['visible'], True)
 
     def test_no_cache(self):
         verbs = self.nouns[0].get_available_verbs(None)

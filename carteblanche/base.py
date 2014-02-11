@@ -5,9 +5,8 @@ class Verb(object):
     url = "Unspecified"
     display_name = "Unspecified"
     denied_message = "Sorry dude, I'm afraid you can't do that."
-    condition_name = None
     required = True
-    visible = False
+    visible = True
 
     def __init__(self, noun=None):
         self.noun = noun
@@ -28,9 +27,10 @@ class Verb(object):
     def get_serialized(self):
         return {
             "url":self.get_url(),
+            "visible":self.visible,
             "display_name":self.get_display_name(),
             "condition_name":self.condition_name,
-            "visible":self.visible
+            
         }
 
     class Meta:
