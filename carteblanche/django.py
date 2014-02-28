@@ -1,4 +1,4 @@
-import carteblanche.models as cb
+import carteblanche.base as cb
 from django.views.generic import DetailView
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import resolve
@@ -6,10 +6,16 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from functools import wraps
 from django.utils.decorators import available_attrs
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 
-class NounView(object):
-    noun = None
+class NounView(SuccessMessageMixin):
+    success_message = "That worked!"
 
+    def __init__(self, **kwargs):
+        super(NounView, self).__init__(**kwargs)
+        self.noun = None
+        
     def get_view_required_verbs(self, view_name):
         verbs = []
         for v in self.noun.get_verbs():
@@ -30,13 +36,12 @@ class NounView(object):
         context = super(NounView, self).get_context_data(**kwargs)
         available_verbs = self.noun.get_available_verbs(self.request.user)
         context['available_verbs'] = available_verbs
-        context['conditions'] = [verb['condition_name'] for verb in available_verbs]
+        context['conditions'] = self.noun.conditions.get_available(self.request.user)
         self.noun.conditions.cache = {}
         return context
 
     def dispatch(self, *args, **kwargs):
         self.noun = self.get_noun(**kwargs)
-#        raise Exception(self.noun.carteblanche_cache)
         #what verbs are required and available for viewing of this page
         #for each of those, get a forbidden message and direct the user to a messaging view
         view_name = resolve(self.request.path_info).url_name
@@ -44,7 +49,9 @@ class NounView(object):
         for verb in self.get_view_required_unavailable_verbs(view_name, self.request.user):
             denied_messages.append(verb.denied_message)
         if len(denied_messages) > 0:
-            return render_to_response('messages.html',{"messages":denied_messages, "available_verbs":self.noun.get_available_verbs(self.request.user)}, RequestContext(self.request))
+            for message in denied_messages:
+                messages.add_message(self.request, messages.ERROR, message)
+            return render_to_response('messages.html',{"available_verbs":self.noun.get_available_verbs(self.request.user)}, RequestContext(self.request))
         
         return super(NounView, self).dispatch(*args, **kwargs)
 
@@ -54,6 +61,7 @@ class NounView(object):
 class DjangoVerb(cb.Verb):
     view_name = None
     app = None
+    visible = True
 
     def get_url(self):
         '''
