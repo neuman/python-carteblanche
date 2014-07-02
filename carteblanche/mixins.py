@@ -12,11 +12,12 @@ import json
 import decimal
 from django.http import HttpResponse
 from django.conf import settings
+from django.core.urlresolvers import NoReverseMatch
 
 try:
     MESSAGES_TEMPLATE = settings.MESSAGES_TEMPLATE
 except Exception as e:
-    MESSAGES_TEMPLATE = 'templates/messages.html'
+    MESSAGES_TEMPLATE = 'carteblanche/messages.html'
 
 class NounView(SuccessMessageMixin):
     success_message = "That worked!"
@@ -77,7 +78,7 @@ class NounView(SuccessMessageMixin):
     class Meta:
         abstract = True
 
-from django.core.urlresolvers import NoReverseMatch
+
 class DjangoVerb(cb.Verb):
     view_name = None
     app = None
