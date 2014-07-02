@@ -1,3 +1,5 @@
+WARNING: This readme is out of date in the development branch, please refer to [carteblanche-django-starter](https://www.google.com) for an example project that demonstrates 
+
 python-carteblanche
 ===================
 
