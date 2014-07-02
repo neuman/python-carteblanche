@@ -1,4 +1,4 @@
-WARNING: This readme is out of date in the development branch, please refer to [carteblanche-django-starter](https://www.google.com) for an example project that demonstrates 
+This readme will introduce you to Carteblanche and walk you through an example app, please refer to [carteblanche-django-starter](https://github.com/neuman/carteblanche-django-starter) for the full example project.
 
 python-carteblanche
 ===================
@@ -47,8 +47,8 @@ The Noun mixin is intended to be mixed into a model class and along with the att
 The NounView mixin is intended to be mixed in with a View class and allows the view to be aware of what noun it represents.
 
 
-The Verbs File
---------------
+Guided Intro
+------------
 
 Your first step is to create a verbs.py file. This is typically done at the same level as your models.py file.  This file will contain the conditional permissions for your entire app in once centralized location which makes for very easy adjustments later on when your designer/product owner/user decides they want a change.
 
@@ -288,3 +288,10 @@ The NounView mixin automatically includes 'available_verbs', 'conditions' and 'n
 </ul>
 ```
 
+When view access is denied to a user, Carteblanche uses django's messaging system to display the appropriate Verb's 'denied_message'.  You can set 'MESSAGES_TEMPLATE' to a custom template in your settings file.  The messages template should include something similar to the following:
+
+```html
+{% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+{% endfor %}
+```
