@@ -1,13 +1,14 @@
 import random
 import unittest
-import models as cb
+import base as cb
 
 class ProjectViewVerb(cb.Verb):
+    condition_name = 'can_view'
     def get_url(self):
-        return r"projects/"
+        return "projects/"
 
 class ProjectMemberVerb(cb.Verb):
-    availability_key = "is_member"
+    condition_name = "is_member"
     def is_available(self, user):
         return self.noun.is_member(user)
 
@@ -15,7 +16,7 @@ class ProjectUploadVerb(ProjectMemberVerb):
     display_name = "Upload Media"
 
     def get_url(self):
-        return r"projects/upload"
+        return "projects/upload"
 
 class ProjectPostVerb(ProjectMemberVerb):
     display_name = "Post"
@@ -24,15 +25,20 @@ class ProjectPostVerb(ProjectMemberVerb):
         return "/projects/post"
 
 class Project(cb.Noun):
-    run_count = 0
     verb_classes = [ProjectUploadVerb, ProjectPostVerb, ProjectViewVerb]
+
+    def __init__(self):
+        super(Project, self).__init__()
+        self.run_count = 0
 
     def is_member(self, user):
         self.run_count += 1
         return True
 
 class ProjectDupe(cb.Noun):
-    run_count = 0
+    def __init__(self):
+        super(ProjectDupe, self).__init__()
+        self.run_count = 0
 
     def is_member(self, user):
         self.run_count += 1
@@ -69,6 +75,9 @@ class TestNounFunctions(unittest.TestCase):
         self.assertTrue(self.nouns[0].run_count == 1)
         #reset it
         self.nouns[0].run_count = 0
+
+    def test_visible(self):
+        self.assertEqual(self.nouns[0].get_available_verbs('no need for a user object')[0]['visible'], True)
 
     def test_no_cache(self):
         verbs = self.nouns[0].get_available_verbs(None)
