@@ -109,7 +109,7 @@ Lets assume that our app has a model called 'Sprocket' that has a ManyToMany of 
 * 'sprocket_update' which should be available only to users listed in the Sprocket's members
 * 'sprocket_delete' which should be available only to users listed in the Sprocket's members
 
-We would add the following to our verbs.py file
+You would add the following to our verbs.py file.  You can see how easy it is to avoid running the same 'is_available' (by having SprocketUpdateVerb and SprocketUpdateVerb inherit from SprocketeerVerb they share a 'condition_name').
 
 ```python
 class SprocketDetailVerb(AuthenticatedVerb):
@@ -144,101 +144,142 @@ class SprocketDeleteVerb(SprocketeerVerb):
     view_name = 'sprocket_delete'
 ```
 
-
-Usage
------
-
-###Use in a model
+In order to make these Verbs actually work for us, you must link them to a Noun.  Make an existing model into a Noun by adding the mixin after models.Model in the inheritance chain, and adding a 'verb_classes' attribute as seen below.
 
 ```python
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from carteblanche.models import Verb, Noun
+from carteblanche.base import Noun
+from core.verbs import *
 
-class ProjectVerb(Verb):
-    display_name = "Human Readable Verb Name"
-    def is_available(self, user):
-        #insert your own conditional logic here to determine 
-        #if this user has permission to do this action
-        if self.noun.owners.filter(id=user.id).count() > 0:
-            return True
-        else:
-            return False
+class Sprocket(models.Model, Noun):
+    sprocketeers = models.ManyToManyField(User)
+    title = models.CharField(max_length=300)
+    verb_classes = [SprocketDetailVerb, SprocketUpdateVerb, SprocketListVerb]
 
-    def get_url(self):
-        #I use django reverse to spit out the url of the action 
-        #for the given model but you can substitute your own logic
-        return reverse(
-            viewname='project_action_view_name', 
-            args=[self.noun.id], 
-            current_app='app_name'
-            )
+    def __str__(self):
+        return self.title
 
-class Project(models.Model, Noun):
-    owners = models.ManyToManyField(Person)
-    verb_classes = [ProjectVerb]
+    def is_sprocketeer(self, user):
+        return self.sprocketeers.filter(id=user.id).count() > 0
+
+    def get_absolute_url(self):
+        return SprocketDetailVerb(self).get_url()
 
 ```
 
-###Use in a view 
+Now that your model has become a Noun, any views pertaining to it need to become NounViews.  Add the NounView mixin before View in the inheritance chain.  You must also add a 'get_noun' function that returns the instance of the model this view pertains to.  Look how clean these views are!
 
 ```python
-    class ProjectsView(TemplateView, Noun):
-        template_name = 'whatever.html'
-        verb_classes = [ProjectCreateAction]
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import CreateView, UpdateView
+from carteblanche.mixins import NounView
+import core.models as cm
 
-        def get_context_data(self, **kwargs):
-            context = super(ProjectsView, self).get_context_data(**kwargs)
-            context['available_actions'] = self.get_available_verbs(self.request.user)
-            return context
+class SprocketView(NounView):
+
+    def get_noun(self, **kwargs):
+        return cm.Sprocket.objects.get(id=self.kwargs['pk'])
+
+
+class SprocketDetailView(SprocketView, TemplateView):
+    template_name = 'base.html'
+
+
+class SprocketUpdateView(SprocketView, UpdateView):
+    model = cm.Sprocket
+    template_name = 'form.html'
+    success_url = '/'
+
+    def get_success_url(self):
+        return cm.SprocketDetailVerb(self.noun).get_url()
 ```
 
-###Use inheretance to avoid running the same query twice
-
-If some of your verbs need to run the same query to check availability, you can specify an `avalability_key` and `get_available_verbs` will store the value returned from that verb's `is_available` method.  Any verbs that are checked after that with the same `availability_key` will use the stored value.  Inheretance is a simple way to do this without rewriting the `avalability_key` or shared `is_available` method.
+At this point, all of the above views should automatically allow access to users who are members of a given sprocket and deny access to everyone else, but what about those other verbs we defined earlier that don't actually have a Noun?  SiteJoinVerb and SiteLoginVerb are actions pertaining to the site itself rather than a particular model, so we'll just create a Noun for the site along with a few more verbs that are available at the siteroot.  Add the following to your verbs.py file.
 
 ```python
-class ProjectMemberVerb(Verb):
-    availability_key = "is_member"
+class SprocketCreateVerb(CoreVerb):
+    display_name = "Create New Sprocket"
+    view_name='sprocket_create'
+    condition_name = 'is_authenticated'
+    required = True
+
+    @availability_login_required
     def is_available(self, user):
-        return self.noun.is_member(user)
-
-class ProjectUploadVerb(ProjectMemberVerb):
-    display_name = "Upload Media"
-
-    def get_url(self):
-        return "projects/upload"
-
-class ProjectPostVerb(ProjectMemberVerb):
-    display_name = "Post"
-
-    def get_url(self):
-        return "/projects/post"
-
-class Project(Noun):
-    run_count = 0
-    verb_classes = [ProjectUploadVerb, ProjectPostVerb]
-
-    def is_member(self, user):
-        self.run_count += 1
         return True
+
+class SprocketListVerb(AuthenticatedVerb):
+    display_name = "List Sprockets"
+    view_name = 'sprocket_list'
+
+class SiteRoot(Noun):
+    '''
+    A convenient hack that lets pages that have no actual noun have verbs and verb-based permissions. 
+    '''
+    verb_classes = [SiteJoinVerb, SiteLoginVerb, SprocketCreateVerb]
+
+    def __unicode__(self):
+        return 'Site Root'
+
+    class Meta:
+        abstract = True
 ```
 
-###You can override the 'get_verbs'  method if you have custom logic.
+Now add the following to your views.py file.
 
 ```python
-class Project(models.Model, Noun):
-    owners = models.ManyToManyField(Person)
 
-    def get_verbs(self):
-        verbs = [
-            ProjectVerbs(self)
-        ]
-        return verbs
+class SiteRootView(NounView):
+    def get_noun(self, **kwargs):
+        siteroot = cm.SiteRoot()
+        return siteroot
+
+class IndexView(SiteRootView, TemplateView):
+    template_name = 'index.html'
+
+#this login/user create stuff might be better off in a different app
+class UserCreateView(SiteRootView, CreateView):
+    model = User
+    template_name = 'form.html'
+    form_class = cf.RegistrationForm
+    success_url = '/'
+
+    def form_valid(self, form):
+        user = User.objects.create_user(uuid4().hex, form.cleaned_data['email'], form.cleaned_data['password1'])
+        user.first_name = form.cleaned_data['first_name']
+        user.last_name = form.cleaned_data['first_name']
+        user.save()
+        user = authenticate(username=user.username, password=form.cleaned_data['password1'])
+        login(self.request, user)
+        form.instance = user
+        return super(UserCreateView, self).form_valid(form)
+
+
+class UserLoginView(SiteRootView, FormView):
+    template_name = 'form.html'
+    form_class = cf.LoginForm
+    success_url = '/'
+
+    def form_valid(self, form):
+        user = form.user_cache
+        login(self.request, user)
+        form.instance = user
+        return super(UserLoginView, self).form_valid(form)    
+
+class SprocketCreateView(SiteRootView, CreateView):
+    model = cm.Sprocket
+    template_name = 'form.html'
+    form_class = cf.SprocketForm
+    success_url = '/'
+
+    def get_success_url(self):
+        self.object.sprocketeers.add(self.request.user)
+        return cm.SprocketDetailVerb(self.object).get_url()
 ```
 
 ###Displaying in a Template
-
+The NounView mixin automatically includes 'available_verbs', 'conditions' and 'noun' in the cointext it hands to the template renderer.  All you have to do to display the dynamically rendered navigation menu is include the following somewhere in your template.
 ```html
 <ul>
   {% for verb in noun.get_available_verbs %}
