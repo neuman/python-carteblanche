@@ -71,9 +71,12 @@ class NounView(SuccessMessageMixin):
         view_name = resolve(self.request.path_info).url_name
         denied_messages = []
         for verb in self.get_view_required_unavailable_verbs(view_name, self.request.user):
-            denied_messages.append(verb.success_message)
+            denied_messages.append(verb.get_denied_message())
 
         return ''.join(denied_messages)
+
+    def get_denied_message(self):
+        return self.denied_message
 
     class Meta:
         abstract = True
