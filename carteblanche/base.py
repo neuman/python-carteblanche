@@ -20,6 +20,9 @@ class Verb(object):
     def get_display_name(self):
         return self.display_name
 
+    def get_denied_message(self, user):
+        return self.denied_message
+
     def is_available(self, user):
         "takes a user and always returns True or False"
         return True
